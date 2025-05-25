@@ -135,7 +135,8 @@ bool	validate_map(t_map *map, t_player **player)
 				return (write(2, "Error Walls\n", 12));
 		}
 	}
-	if (ft_strncmp(map->mapgrid[0], map->mapgrid[i], map->x_len) != 0)
+	if ((ft_strlen(map->mapgrid[0]) != ft_strlen(map->mapgrid[i]))
+		|| (ft_strncmp(map->mapgrid[0], map->mapgrid[i], map->x_len) != 0))
 		return (write(2, "Error bottom walls\n", 19));
 	if ((*player)->count != 1 || map->ex_pos != 1 || map->coll < 1)
 		return (write(2, "Error invalid map\n", 18));
