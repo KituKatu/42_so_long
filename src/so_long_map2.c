@@ -16,11 +16,6 @@ t_map	*copy_map(t_map *map)
 {
 	t_map	*map_copy;
 
-	if (!map)
-	{
-		write(1, "No Map Given\n", 13);
-		return (NULL);
-	}
 	map_copy = (t_map *)ft_calloc(1, sizeof(t_map));
 	if (!map_copy)
 	{
@@ -34,6 +29,8 @@ t_map	*copy_map(t_map *map)
 		return (NULL);
 	}
 	map_copy->mapgrid = ft_split(map_copy->mapline, '\n');
+	map_copy->x_len = map->x_len;
+	map_copy->y_len = map->y_len;
 	map_copy->ex_pos = map->ex_pos;
 	map_copy->ex_posx = map->ex_posx;
 	map_copy->ex_posy = map->ex_posy;
