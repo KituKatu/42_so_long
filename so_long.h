@@ -75,16 +75,18 @@ typedef struct s_gdata
 
 void			safe_free(void *ptr);
 void			exit_game(t_gdata **game, const char *str);
+bool			init_game(t_gdata **game, char *filename);
 bool			init_player(t_gdata **game);
 bool			init_pl_anim(t_gdata **game);
 bool			init_map(char *filename, t_gdata **game);
-t_map			*read_map_file(t_map *map, const char *filename);
+bool			read_map_file(t_gdata **game);
 t_map			*copy_map(t_map *map);
+bool			map_copy_val(t_gdata **game);
 bool			validate_map(t_map *map, t_player **player);
-t_map			*validate_mapline(t_map *map, t_player **player, int i, int j);
+bool 			validate_map_line(t_map *map);
+t_map			*validate_map_row(t_map *map, t_player **player, int i, int j);
 void			validate_map_path(t_map *map, int posx, int posy);
 bool			check_map_path(t_map *map);
-bool			init_game(t_gdata **game, char *filename);
 bool			load_img(t_gdata **game);
 void			render_map(mlx_t *mlx, t_map *map);
 void			render_player(mlx_t *mlx, t_player *player);

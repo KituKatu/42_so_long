@@ -78,3 +78,21 @@ bool	check_map_path(t_map *map)
 	}
 	return (0);
 }
+
+bool	map_copy_val(t_gdata **game)
+{
+	t_map	*map_copy;
+
+	map_copy = NULL;
+	map_copy = copy_map((*game)->map);
+	if (!map_copy)
+		return (1);
+	validate_map_path(map_copy, (*game)->player->x, (*game)->player->y);
+	if (check_map_path(map_copy))
+	{
+		(clean_map(&map_copy), safe_free(map_copy));
+		return (1);
+	}
+	(clean_map(&map_copy), safe_free(map_copy));
+	return (0);
+}

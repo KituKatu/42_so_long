@@ -22,21 +22,21 @@
 
 #include "../so_long.h"
 
-bool	map_copy_val(t_gdata **game)
+bool validate_map_line(t_map *map)
 {
-	t_map	*map_copy;
+	int i;
 
-	map_copy = NULL;
-	map_copy = copy_map((*game)->map);
-	if (!map_copy)
-		return (1);
-	validate_map_path(map_copy, (*game)->player->x, (*game)->player->y);
-	if (check_map_path(map_copy))
+	i = 0;
+	if (!map->mapline)
+		return(write(2, "Empty MapLine\n", 14));
+	else if (!ft_strchr(map->mapline, '\n'))
+		return(write(2, "No Grid found\n", 10));
+	while (map->mapline[i])
 	{
-		(clean_map(&map_copy), safe_free(map_copy));
-		return (1);
+		if (map->mapline[i] != WALL && map->mapline[i] != SPACE && map->mapline[i] != PLAYER && map->mapline[i] != EXIT && map->mapline[i] != COLLECTIBLE && map->mapline[i] != '\n')
+			return(write(2, "Wrong Map Tiles\n", 16));
+		i++;
 	}
-	(clean_map(&map_copy), safe_free(map_copy));
 	return (0);
 }
 
@@ -51,9 +51,13 @@ bool	init_map(char *filename, t_gdata **game)
 	(*game)->map = (t_map *)ft_calloc(1, sizeof(t_map));
 	if (!(*game)->map)
 		return (write(2, "Calloc Fail\n", 12));
-	(*game)->map = read_map_file((*game)->map, filename);
+	(*game)->map->fd = open(filename, O_RDONLY);
 	if ((*game)->map->fd < 0)
 		return (safe_free(filename), write(2, "Map Not Read\n", 14));
+	if (read_map_file(game))
+		return(safe_free(filename), 1);
+	if (validate_map_line((*game)->map))
+		return (safe_free(filename), 1);
 	(*game)->map->mapgrid = ft_split((*game)->map->mapline, '\n');
 	(*game)->map->x_len = ft_strlen((*game)->map->mapgrid[0]);
 	if (validate_map((*game)->map, &(*game)->player))
@@ -64,36 +68,37 @@ bool	init_map(char *filename, t_gdata **game)
 	return (0);
 }
 
-t_map	*read_map_file(t_map *map, const char *filename)
+bool	read_map_file(t_gdata **game)
 {
 	char	*tmp1;
 	char	*tmp2;
 	char	*tmp3;
 
+	tmp1 = NULL;
 	tmp2 = NULL;
-	map->fd = open(filename, O_RDONLY);
-	if (map->fd == -1)
-		return (map);
-	tmp1 = get_next_line(map->fd);
+	tmp1 = get_next_line((*game)->map->fd);
+	if (!tmp1 || ft_strchr(tmp1, '\n') == NULL)
+		return(safe_free(tmp1), write(2, "Empty Map\n", 10));
 	while (tmp1 != NULL)
 	{
 		if (tmp2 != NULL)
 		{
-			tmp3 = map->mapline;
-			if (map->mapline == NULL)
-				map->mapline = ft_strjoin(tmp2, tmp1);
+			tmp3 = (*game)->map->mapline;
+			if ((*game)->map->mapline == NULL)
+				(*game)->map->mapline = ft_strjoin(tmp2, tmp1);
 			else
-				map->mapline = ft_strjoin(map->mapline, tmp1);
+				(*game)->map->mapline = ft_strjoin((*game)->map->mapline, tmp1);
 			(free(tmp2), free(tmp3));
 		}
 		tmp2 = ft_strdup(tmp1);
-		(free(tmp1), map->y_len++);
-		tmp1 = get_next_line(map->fd);
+		(free(tmp1), (*game)->map->y_len++);
+		tmp1 = get_next_line((*game)->map->fd);
 	}
-	return (free(tmp2), close(map->fd), map);
+	free(tmp2), close((*game)->map->fd);
+	return (0);
 }
 
-t_map	*validate_mapline(t_map *map, t_player **player, int i, int j)
+t_map	*validate_map_row(t_map *map, t_player **player, int i, int j)
 {
 	if (i == 0 && map->mapgrid[i][j] != WALL)
 		return (NULL);
@@ -126,12 +131,11 @@ bool	validate_map(t_map *map, t_player **player)
 	while (++i < map->y_len - 1)
 	{
 		j = -1;
-		if ((ft_strlen(map->mapgrid[i]) != (size_t)map->x_len)
-			|| (map->x_len == map->y_len))
+		if (ft_strlen(map->mapgrid[i]) != (size_t)map->x_len)
 			return (write(2, "Error map measurements\n", 23));
 		while (map->mapgrid[i][++j] != '\0')
 		{
-			if ((validate_mapline(map, player, i, j)) == NULL)
+			if ((validate_map_row(map, player, i, j)) == NULL)
 				return (write(2, "Error Walls\n", 12));
 		}
 	}

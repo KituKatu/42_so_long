@@ -81,7 +81,7 @@ int32_t	main(int argc, char **argv)
 		exit_game(&game, "Invalid Render\n");
 	mlx_key_hook(game->mlx, &sl_keyhook, &game);
 	mlx_loop(game->mlx);
-	exit_game(&game, "Yay\n");
+	exit_game(&game, "Exit Game\n");
 	safe_free(game);
 	return (EXIT_SUCCESS);
 }
