@@ -22,19 +22,21 @@
 
 #include "../so_long.h"
 
-bool validate_map_line(t_map *map)
+bool	validate_map_line(t_map *map)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!map->mapline)
-		return(write(2, "Empty MapLine\n", 14));
+		return (write(2, "Empty MapLine\n", 14));
 	else if (!ft_strchr(map->mapline, '\n'))
-		return(write(2, "No Grid found\n", 10));
+		return (write(2, "No Grid found\n", 10));
 	while (map->mapline[i])
 	{
-		if (map->mapline[i] != WALL && map->mapline[i] != SPACE && map->mapline[i] != PLAYER && map->mapline[i] != EXIT && map->mapline[i] != COLLECTIBLE && map->mapline[i] != '\n')
-			return(write(2, "Wrong Map Tiles\n", 16));
+		if (map->mapline[i] != WALL && map->mapline[i] != SPACE
+			&& map->mapline[i] != PLAYER && map->mapline[i] != EXIT
+			&& map->mapline[i] != COLLECTIBLE && map->mapline[i] != '\n')
+			return (write(2, "Wrong Map Tiles\n", 16));
 		i++;
 	}
 	return (0);
@@ -55,7 +57,7 @@ bool	init_map(char *filename, t_gdata **game)
 	if ((*game)->map->fd < 0)
 		return (safe_free(filename), write(2, "Map Not Read\n", 14));
 	if (read_map_file(game))
-		return(safe_free(filename), 1);
+		return (safe_free(filename), 1);
 	if (validate_map_line((*game)->map))
 		return (safe_free(filename), 1);
 	(*game)->map->mapgrid = ft_split((*game)->map->mapline, '\n');
@@ -78,7 +80,7 @@ bool	read_map_file(t_gdata **game)
 	tmp2 = NULL;
 	tmp1 = get_next_line((*game)->map->fd);
 	if (!tmp1 || ft_strchr(tmp1, '\n') == NULL)
-		return(safe_free(tmp1), write(2, "Empty Map\n", 10));
+		return (safe_free(tmp1), write(2, "Empty Map\n", 10));
 	while (tmp1 != NULL)
 	{
 		if (tmp2 != NULL)
@@ -94,8 +96,7 @@ bool	read_map_file(t_gdata **game)
 		(free(tmp1), (*game)->map->y_len++);
 		tmp1 = get_next_line((*game)->map->fd);
 	}
-	free(tmp2), close((*game)->map->fd);
-	return (0);
+	return (free(tmp2), close((*game)->map->fd), 0);
 }
 
 t_map	*validate_map_row(t_map *map, t_player **player, int i, int j)

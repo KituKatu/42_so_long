@@ -83,7 +83,7 @@ bool			read_map_file(t_gdata **game);
 t_map			*copy_map(t_map *map);
 bool			map_copy_val(t_gdata **game);
 bool			validate_map(t_map *map, t_player **player);
-bool 			validate_map_line(t_map *map);
+bool			validate_map_line(t_map *map);
 t_map			*validate_map_row(t_map *map, t_player **player, int i, int j);
 void			validate_map_path(t_map *map, int posx, int posy);
 bool			check_map_path(t_map *map);
