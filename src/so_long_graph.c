@@ -10,9 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// if ((map->mapgrid[i][j] == 'E') || (map->mapgrid[i][j] == '0')
-//|| (map->mapgrid[i][j] == 'P') || (map->mapgrid[i][j] == 'C'))
-
 #include "../so_long.h"
 
 bool	load_img(t_gdata **game)

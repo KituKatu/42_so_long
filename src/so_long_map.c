@@ -70,40 +70,65 @@ bool	init_map(char *filename, t_gdata **game)
 	return (0);
 }
 
-bool	read_map_file(t_gdata **game)
+bool read_map_file(t_gdata **game)
 {
-	char	*tmp1;
-	char	*tmp2;
-	char	*tmp3;
+	int bytesread;
+	char *full_line; 
+	char buffer[READ_SIZE + 1];
 
-	tmp1 = NULL;
-	tmp2 = NULL;
-	tmp1 = get_next_line((*game)->map->fd);
-	if (!tmp1 || ft_strchr(tmp1, '\n') == NULL)
-		return (safe_free(tmp1), write(2, "Empty Map\n", 10));
-	while (tmp1 != NULL)
+	bytesread = 1;
+	bytesread = read((*game)->map->fd, buffer, READ_SIZE);
+	if (bytesread < 0)
+		return (write(2, "Empty Map\n", 10));
+	full_line = ft_strdup(buffer);
+	
+	while (ft_strchr(full_line, '\n' == NULL))
 	{
-		if (tmp2 != NULL)
-		{
-			tmp3 = (*game)->map->mapline;
-			if ((*game)->map->mapline == NULL)
-				(*game)->map->mapline = ft_strjoin(tmp2, tmp1);
-			else
-				(*game)->map->mapline = ft_strjoin((*game)->map->mapline, tmp1);
-			(free(tmp2), free(tmp3));
-		}
-		tmp2 = ft_strdup(tmp1);
-		(free(tmp1), (*game)->map->y_len++);
-		tmp1 = get_next_line((*game)->map->fd);
+		bytesread = read((*game)->map->fd, buffer, READ_SIZE);
+		if (bytesread == -1)
+			return (free(full_line), 1);
+		if (bytesread == 0)
+			break ;
+
 	}
-	return (free(tmp2), close((*game)->map->fd), 0);
+	return (0);
 }
+
+
+// bool	read_map_file(t_gdata **game)
+// {
+// 	char	*tmp1;
+// 	char	*tmp2;
+// 	char	*tmp3;
+
+// 	tmp1 = NULL;
+// 	tmp2 = NULL;
+// 	tmp1 = get_next_line((*game)->map->fd);
+// 	if (!tmp1 || ft_strchr(tmp1, '\n') == NULL)
+// 		return (safe_free(tmp1), write(2, "Empty Map\n", 10));
+// 	while (tmp1 != NULL)
+// 	{
+// 		if (tmp2 != NULL)
+// 		{
+// 			tmp3 = (*game)->map->mapline;
+// 			if ((*game)->map->mapline == NULL)
+// 				(*game)->map->mapline = ft_strjoin(tmp2, tmp1);
+// 			else
+// 				(*game)->map->mapline = ft_strjoin((*game)->map->mapline, tmp1);
+// 			(free(tmp2), free(tmp3));
+// 		}
+// 		tmp2 = ft_strdup(tmp1);
+// 		(free(tmp1), (*game)->map->y_len++);
+// 		tmp1 = get_next_line((*game)->map->fd);
+// 	}
+// 	return (free(tmp2), close((*game)->map->fd), 0);
+// }
 
 t_map	*validate_map_row(t_map *map, t_player **player, int i, int j)
 {
 	if (i == 0 && map->mapgrid[i][j] != WALL)
 		return (NULL);
-	else if ((j == 0 && map->mapgrid[i][j] != WALL) || (j == map->x_len
+	else if ((j == 0 && map->mapgrid[i][j] != WALL) || (j == map->x_len - 1
 			&& map->mapgrid[i][j] != WALL))
 		return (NULL);
 	else if (map->mapgrid[i][j] == PLAYER)
@@ -116,7 +141,7 @@ t_map	*validate_map_row(t_map *map, t_player **player, int i, int j)
 		map->coll++;
 	else if (map->mapgrid[i][j] == EXIT)
 	{
-		map->ex_pos++;
+		map->ex_count++;
 		map->ex_posx = j;
 		map->ex_posy = i;
 	}
@@ -143,7 +168,7 @@ bool	validate_map(t_map *map, t_player **player)
 	if ((ft_strlen(map->mapgrid[0]) != ft_strlen(map->mapgrid[i]))
 		|| (ft_strncmp(map->mapgrid[0], map->mapgrid[i], map->x_len) != 0))
 		return (write(2, "Error bottom walls\n", 19));
-	if ((*player)->count != 1 || map->ex_pos != 1 || map->coll < 1)
+	if ((*player)->count != 1 || map->ex_count != 1 || map->coll < 1)
 		return (write(2, "Error invalid map\n", 18));
 	return (0);
 }

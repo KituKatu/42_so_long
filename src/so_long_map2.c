@@ -31,7 +31,7 @@ t_map	*copy_map(t_map *map)
 	map_copy->mapgrid = ft_split(map_copy->mapline, '\n');
 	map_copy->x_len = map->x_len;
 	map_copy->y_len = map->y_len;
-	map_copy->ex_pos = map->ex_pos;
+	map_copy->ex_count = map->ex_count;
 	map_copy->ex_posx = map->ex_posx;
 	map_copy->ex_posy = map->ex_posy;
 	return (map_copy);
@@ -41,14 +41,10 @@ void	validate_map_path(t_map *map, int posx, int posy)
 {
 	if (map->mapgrid[posy][posx] == WALL)
 		return ;
-	else if (map->mapgrid[posy][posx] == EXIT)
-	{
-		map->mapgrid[posy][posx] = '.';
-		return ;
-	}
 	else if (map->mapgrid[posy][posx] == COLLECTIBLE
 		|| map->mapgrid[posy][posx] == SPACE
-		|| map->mapgrid[posy][posx] == PLAYER)
+		|| map->mapgrid[posy][posx] == PLAYER
+		|| map->mapgrid[posy][posx] == EXIT)
 	{
 		map->mapgrid[posy][posx] = '.';
 		validate_map_path(map, posx + 1, posy);
